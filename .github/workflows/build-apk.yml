@@ -1,0 +1,44 @@
+name: Build Skybridge Mock APK
+
+# Trigger the build every time you push code to the main branch
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set up Java environment
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '11'
+
+      # Set up Flutter environemnt on the GitHub runner
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.10.0' # Matches the pubspec environment
+
+      - name: Get Dependencies
+        run: flutter pub get
+        working-directory: frontend
+
+      # This is the actual compilation command
+      - name: Build APK (Release mode)
+        run: flutter build apk --release --split-per-abi
+        working-directory: frontend
+
+      # Upload the finished APK so you can download it from GitHub
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: skybridge-mock-apk
+          path: frontend/build/app/outputs/flutter-apk/app-release.apk

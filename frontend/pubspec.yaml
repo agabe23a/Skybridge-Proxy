@@ -1,0 +1,20 @@
+name: skybridge_proxy
+description: Premium US Proxy Client
+version: 1.0.0+1
+environment:
+  sdk: ">=2.17.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # In production, we will add flutter_v2ray here
+  cupertino_icons: ^1.0.2
+  shared_preferences: ^2.0.15 # For saving username locally
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+  uses-material-design: true
