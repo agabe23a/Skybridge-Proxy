@@ -1,10 +1,7 @@
 name: Build Skybridge Mock APK
 
-# Trigger the build every time you push code to the main branch
 on:
   push:
-    branches: [ main, master ]
-  pull_request:
     branches: [ main, master ]
 
 jobs:
@@ -19,24 +16,32 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '11'
+          java-version: '17'
 
-      # Set up Flutter environemnt on the GitHub runner
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.10.0' # Matches the pubspec environment
+          flutter-version: '3.19.0'
+
+      - name: Scaffold Missing Android Files
+        run: |
+          flutter create temp_app --platforms=android
+          mv temp_app/android ./
+          rm -rf temp_app
+        working-directory: frontend
+
+      - name: Auto-Fix Dart SDK Version
+        run: sed -i 's/>=2.17.0 <3.0.0/>=3.0.0 <4.0.0/g' pubspec.yaml
+        working-directory: frontend
 
       - name: Get Dependencies
         run: flutter pub get
         working-directory: frontend
 
-      # This is the actual compilation command
       - name: Build APK (Release mode)
-        run: flutter build apk --release --split-per-abi
+        run: flutter build apk --release
         working-directory: frontend
 
-      # Upload the finished APK so you can download it from GitHub
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
